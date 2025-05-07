@@ -1,3 +1,4 @@
+import random
 import pytest
 
 from api import API
@@ -25,3 +26,8 @@ def user():
     api.delete_user()
 
 
+@pytest.fixture
+def ingredients_ids(api):
+    ingredients_data = api.get_ingredients().json()["data"]
+    ingredients = (random.choice(ingredients_data), random.choice(ingredients_data))
+    return [i["_id"] for i in ingredients]

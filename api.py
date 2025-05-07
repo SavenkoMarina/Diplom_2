@@ -72,22 +72,18 @@ class API:
         response = self.session.patch(url, json=payload, headers=self._auth_headers())
         return response
 
-    def create_order(self, ingredient_ids: str):
+    def create_order(self, ingredient_ids):
         url = f"{self.BASE_URL}/orders"
-        payload = {"ingredients": ingredient_ids}
+        payload = {}
+        if ingredient_ids:
+            payload["ingredients"]  = ingredient_ids
         response = self.session.post(url, json=payload, headers=self._auth_headers())
 
         return response
 
-    def initiate_password_reset(self, email: str):
-        url = f"{self.BASE_URL}/password-reset"
-        payload = {"email": email}
-        response = self.session.post(url, json=payload)
 
-        return response
+    def get_orders(self):
+        url = f"{self.BASE_URL}/orders"
+        response = self.session.get(url, headers=self._auth_headers())
 
-    def reset_password(self, password: str, token: str):
-        url = f"{self.BASE_URL}/password-reset/reset"
-        payload = {"password": password, "token": token}
-        response = self.session.post(url, json=payload)
         return response
