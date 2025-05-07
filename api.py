@@ -1,4 +1,5 @@
 import requests
+from allure import step
 
 class API:
     BASE_URL = "https://stellarburgers.nomoreparties.site/api"
@@ -13,12 +14,7 @@ class API:
             return {"Authorization": self.access_token}
         return {}
 
-    def get_ingredients(self):
-        url = f"{self.BASE_URL}/ingredients"
-        response = self.session.get(url)
-
-        return response
-
+    @step("Регистрация пользователя")
     def register_user(self, email: str, password: str, name: str):
         url = f"{self.BASE_URL}/auth/register"
         payload = {"email": email, "password": password, "name": name}
@@ -28,6 +24,7 @@ class API:
         self.access_token = data.get("accessToken")
         return response
 
+    @step("Авторизация пользователя")
     def login_user(self, email: str, password: str):
         url = f"{self.BASE_URL}/auth/login"
         payload = {"email": email, "password": password}
@@ -38,22 +35,7 @@ class API:
         self.refresh_token = data.get("refreshToken")
         return response
 
-    def logout_user(self):
-        url = f"{self.BASE_URL}/auth/logout"
-        payload = {"token": self.refresh_token}
-        response = self.session.post(url, json=payload, headers=self._auth_headers())
-
-        self.access_token = None
-        self.refresh_token = None
-        return response
-
-    def get_user_info(self):
-        url = f"{self.BASE_URL}/auth/user"
-        response = self.session.get(url, headers=self._auth_headers())
-
-        return response
-
-
+    @step("Удаление пользователя")
     def delete_user(self):
         url = f"{self.BASE_URL}/auth/user"
         response = self.session.delete(url, headers=self._auth_headers())
@@ -62,6 +44,7 @@ class API:
         self.refresh_token = None
         return response
 
+    @step("Обновление информации пользователя")
     def update_user_info(self, email=None, name=None):
         url = f"{self.BASE_URL}/auth/user"
         payload = {}
@@ -72,6 +55,14 @@ class API:
         response = self.session.patch(url, json=payload, headers=self._auth_headers())
         return response
 
+    @step("Получение ингридиентов")
+    def get_ingredients(self):
+        url = f"{self.BASE_URL}/ingredients"
+        response = self.session.get(url)
+
+        return response
+
+    @step("Создание заказа")
     def create_order(self, ingredient_ids):
         url = f"{self.BASE_URL}/orders"
         payload = {}
@@ -81,7 +72,7 @@ class API:
 
         return response
 
-
+    @step("Получение заказов пользователя")
     def get_orders(self):
         url = f"{self.BASE_URL}/orders"
         response = self.session.get(url, headers=self._auth_headers())
